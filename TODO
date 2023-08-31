@@ -1,0 +1,10 @@
+1. Update documentations for the package and include examples under mplusParallel.automation
+2. Improve functionality of mplusParallel.automation and troubleshoot different use cases.
+3. Add vignettes for simple to complex use of the function including:
+       - Simple data generation function
+            (As of 08/31/23 this is in progress)
+       - Advanced data generation function usage
+       - Implementing your own mplus automation code into the function
+            (As of 08/31/23 this is in progress)
+       - Combination of data generation and user generated automation code
+4. Add support for returning lists from the function.
