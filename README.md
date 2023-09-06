@@ -6,4 +6,4 @@ The `mplusParallel.automation` package provides parallelized automation for Mplu
 if (!require("remotes")) {
   install.packages("remotes")
 }
-remotes::install_github("YOUR_GITHUB_USERNAME/mplusParallel.automation")
+remotes::install_github("jakewplantz/mplusParallel.automation")
