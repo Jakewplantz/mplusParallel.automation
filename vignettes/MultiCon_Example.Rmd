@@ -1,5 +1,5 @@
 ---
-title: "Using the multi_con argument in mplusParallel_automation"
+title: "Multiple Condition Data Generation Functions Vignette"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Using the multi_con argument in mplusParallel_automation}
@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 This vignette demonstrates the usage of the multi_con argument in the mplusParallel_automation function. The multi_con argument allows users to specify whether multiple conditions are being used in a single data_gen function. 
 
-```{r setup}
+```{r setup, results='hide',message=FALSE,warning=FALSE, echo = T}
 # --- mplusParallel.automation --- # 
 if (!require("remotes")) {
   install.packages("remotes")
@@ -147,12 +147,15 @@ In this case we return the summaries from each replication. All single condition
 
 ```{r}
 
-res <- mplusParallel_automation(k=5, multi_con = T, data_gen = data, con_index = c('es','s'), results = 'summaries') 
+res <- mplusParallel_automation(k=5, multi_con = T, data_gen = data_gen, con_index = c('es','s'), results = 'summaries') 
 
 ```
 
-We can now examine the results.
+We can now examine the results and remove the session folders unless they need to be kept.
 
-```{r}
-head(res)
+
+```{r, comment= NA}
+res[,c(1,29,30,33,34)]
+
+removeParFolders()
 ```
