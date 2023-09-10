@@ -1,0 +1,118 @@
+---
+title: "Using the multi_con argument in mplusParallel_automation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using the multi_con argument in mplusParallel_automation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction 
+
+This vignette demonstrates the usage of the multi_con argument in the mplusParallel_automation function. The multi_con argument allows users to specify whether multiple conditions are being used in a single data_gen function. 
+
+```{r setup}
+# --- mplusParallel.automation --- # 
+library(mplusParallel.automation)
+```
+
+# Data Generation
+
+For the purpose of this demonstration we will run a simulation where we simulate binary responses for 12 items across two groups. The sample size (s) is varied and a single item in one group receives a varied DIF effect size (es).
+
+Note that the function expects your data_gen function to directly call packages where necessary. In this case, we are using mirt's simdata function and it is called within as mirt::simdata.
+
+```{r datagen}
+
+data_gen<-"
+
+N = c(500,1000)
+dif_effect_sizes = c(0.6, 1)
+
+# Initial item parameters
+a <- rep(1, 12) # Assuming all items have equal discrimination
+b <- seq(-2, 2, length.out = 12) # Assuming items have varying difficulty levels
+for(s in N){
+for (es in dif_effect_sizes) {
+    # Update discrimination of item 1 for Group B
+    a_groupB <- a
+    a_groupB[1] <- a[1] + es
+    
+    # Simulate data for both groups
+    group_A <- mirt::simdata(a, b, s/2, itemtype = 'dich')
+
+    group_B <- mirt::simdata(a_groupB, b, s/2, itemtype = 'dich')
+    group1 <- matrix(rep(1, s/2))
+    group2 <- matrix(rep(2, s/2))
+    group <- rbind(group1,group2)
+    
+    
+    # Combine the groups' data
+    combined_data <- rbind(group_A, group_B)
+    
+    # Append to all_data
+    data <- cbind(group,combined_data)
+}}
+"
+
+```
+
+# Mplus .inp file creation
+
+The .inp file for this example can be created using the following code.
+
+```{r, eval=FALSE}
+inp_content <- "
+TITLE: TEST
+
+!!! Emma, To comment code in Mplus use !. At the end of each statement you need a semi-colon to denote its complete
+
+!!! DATA: is followed by FILE IS, 'PATHWAY TO DATA' if the data is in the same folder as your inp file it can just be the data name.
+!!! The data must have now row or column names, this is handled for you using the mplusParallel_automation function. 
+
+DATA: FILE IS exdat.csv;
+
+...
+
+i12 (b12);
+"
+
+# Write to an inp file
+writeLines(inp_content, "example_model.inp")
+
+```
+
+# Using the multi_con argument
+
+When using the multi_con argument:
+multi_con is set to T
+
+The con_index should be set by placing any for loop condition in quotes. For example, our data_gen function contains:
+\n
+for(s in N)
+for (es in dif_effect_sizes)
+\n 
+We specify con_index = c('s','es') to correctly track the conditions.
+
+In this case we return the summaries from each replication. All single condition results are supported as well. 
+
+
+
+```{r}
+
+res <- mplusParallel_automation(k=5, multi_con = T, data_gen = data, con_index = c('es','s'), results = 'summaries') 
+
+```
+
+We can now examine the results.
+
+```{r}
+head(res)
+```

@@ -26,6 +26,8 @@
 #' @param results Indicates which results to collect. Supports summaries, parameters,
 #'   and modindicies or any named list argument output by mplus automation. When using summaries, parameters, or modindicies
 #'   mnore specific output is available.
+#' @param multi_con Logical. Indicates whether multiple conditions are run in a singular instance. Default is F.
+#' @param con_index A character vector. Specifies the indices for conditions to be tracked. 
 #' @param params_ext When `results` is 'parameters', specifies parameter type for
 #'   extraction. Can take any type but defaults to 'unstandardized'.
 #'   If you do not desire unstandardized parameters read in an output file to
@@ -50,9 +52,10 @@
 
 mplusParallel_automation <- function(k, k.start = 1,  data_gen = NA, seed = 123, ncores = 'default', run = T,
                                      useCores = T, cores_per_analysis = 'default', Par_plan = 'cluster',
-                                     rec = F, results = c(), params_ext = c('unstandardized'),
+                                     rec = F, results = c(),
+                                     multi_con = F, con_index = c(),
                                      specific_sums = NULL,
-                                     specific_params = NULL, item = NULL,
+                                     specific_params = NULL, item = NULL,params_ext = c('unstandardized'),
                                      modV1s = NULL,ops = NULL, modV2s = NULL,
                                      custom_auto = NULL, retry = T, max_retry = 5,
                                      folder = (dirname(rstudioapi::getActiveDocumentContext()$path))){
@@ -193,28 +196,29 @@ mplusParallel_automation <- function(k, k.start = 1,  data_gen = NA, seed = 123,
 
     copy_folder_contents(folder, session_folder)
     subdirs <- list.dirs(folder, full.names = TRUE, recursive = rec)
-
-
-    if (grepl("\\bseed\\b|\\bseeds\\b", data_gen, ignore.case = TRUE)) {
-      warning("The text contains 'seed' or 'seeds', which may alter reproducibility.")
+    if (is.character(data_gen) && length(data_gen) == 1) {
+      if (grepl("\\bseed\\b|\\bseeds\\b", data_gen, ignore.case = TRUE)) {
+        warning("The text contains 'seed' or 'seeds', which may alter reproducibility.")
+      }
+      
+      # Use tryCatch to detect errors
+      result <- tryCatch({
+        # Try to evaluate the expression
+        eval(parse(text = data_gen))
+      }, error = function(e) {
+        # If an error occurs, stop the function with a specific message
+        stop("Error during evaluation: ", e$message, '\nPlease ensure all objects used by the function are defined within it. The function also expects packages to be directly called i.e. mirt::simdata')
+      })
+      
+      # Check if the "data" object exists after the evaluation
+      if (!exists("data", inherits = FALSE)) {
+        stop("The function passed to data_gen did not result in an object named 'data'. Halting execution.")
+      }
     }
-
-    # Use tryCatch to detect errors
-    result <- tryCatch({
-      # Try to evaluate the expression
-      eval(parse(text = data_gen))
-    }, error = function(e) {
-      # If an error occurs, stop the function with a specific message
-      stop("Error during evaluation: ", e$message, '\nPlease ensure all objects used by the function are defined within it.')
-    })
-
-    # Check if the "data" object exists after the evaluation
-    if (!exists("data", inherits = FALSE)) {
-      stop("The function passed to data_gen did not result in an object named 'data'. Halting execution.")
-    }
-
+    
     rows_list <- list()
 
+    if(multi_con == F){
     #-------------------------------------------------------#
     # Analyze data using mplus automation - when custom auto is entered this section is replaced
     #-------------------------------------------------------#
@@ -303,6 +307,144 @@ mplusParallel_automation <- function(k, k.start = 1,  data_gen = NA, seed = 123,
       return(df)
     } else {
       eval(parse(text = custom_auto))
+}
+    } 
+    else {
+      #-------------------------------------------------------#
+      # Analyze data using mplus automation - when custom auto is entered this section is replaced
+      #-------------------------------------------------------#
+      if (is.null(custom_auto)){
+        df_list <- list()
+        std_MFun<-
+          "
+      retries <- 0
+max_retries <- max_retry
+df_ready <- FALSE
+
+while (!df_ready && retries < max_retries) {
+    filepath <- file.path(session_folder, 'exdat.csv')
+    write.table(data, filepath, col.names = FALSE, row.names = FALSE, sep = ',')
+
+    if (run == TRUE) {
+        runModels(session_folder, showOutput = F, recursive = rec)
+    }
+
+    test_res <- assign(paste0('sums_', pid), readModels(session_folder, what = 'summaries', recursive = rec))
+    t <- test_res[[2]]
+    chi_value <- t$ChiSqM_Value
+
+    if (is.null(chi_value)) {
+        set.seed(k*10000)
+        retries <- retries + 1
+        next
+    }
+
+    if (retries == max_retries) {
+        stop('Max retries reached. Could not get a non-null chi value.')
+    }
+
+    df_ready <- TRUE
+}
+
+if (results == 'summaries') {
+    models_result <- assign(paste0('sums_', pid), readModels(session_folder, what = results, recursive = rec))
+    res <- models_result[[2]]
+    res <- res %>%
+        mutate(Rep = k) %>%
+        select(Rep, everything())
+    new_row <- res
+
+for (con in con_index) {
+    new_row[[con]] <- eval(parse(text = con))
+}
+        rows_list[[length(rows_list) + 1]] <- new_row
+    
+}
+
+else if (results == 'parameters') {
+    models_result <- assign(paste0('sums_', pid), readModels(session_folder, what = results, recursive = rec))
+    res <- models_result
+    new_data <- res[[2]][[params_ext]]
+    new_data <- new_data %>%
+        mutate(Rep = k, ParType = params_ext) %>%
+        select(Rep, everything())
+    new_row <- new_data
+
+for (con in con_index) {
+    new_row[[con]] <- eval(parse(text = con))
+}
+        rows_list[[length(rows_list) + 1]] <- new_row
+    
+}
+
+else if (results == 'mod_indices') {
+    models_result <- assign(paste0('sums_', pid), readModels(session_folder, recursive = rec))
+    res <- models_result[['mod_indices']]
+    new_data <- res
+    new_data <- new_data %>%
+        mutate(Rep = k) %>%
+        select(Rep, everything())
+    new_row <- new_data
+
+for (con in con_index) {
+    new_row[[con]] <- eval(parse(text = con))
+}
+        rows_list[[length(rows_list) + 1]] <- new_row
+    
+}
+
+df <- do.call(rbind, rows_list)
+rows_list <- list()
+df_list[[length(df_list) + 1]] <- df
+     "
+      # Identify the line to split the 'gen' string after using regex
+      pattern <- "data"
+
+      # Combine the parts, adding std_MFun in between
+      # Split 'da' into individual lines
+      lines <- strsplit(data_gen, "\n")[[1]]
+      
+      # Find all lines that match the pattern
+      matching_lines <- which(grepl(pattern, lines, perl = TRUE))
+      
+      # Identify the last matching line
+      last_matching_line <- tail(matching_lines, 1)
+      
+      # Insert 'std_MFun' after the last matching line
+      new_lines <- c(lines[1:last_matching_line], std_MFun, lines[(last_matching_line + 1):length(lines)])
+      # Recombine the lines
+      combined_string <- paste(new_lines, collapse = "\n")
+      
+      
+      # The new code to be added
+      new_code <- c("", "df_final <- do.call(rbind, df_list)", "return(df_final)")
+      lines2 <- strsplit(combined_string, "\n")[[1]]
+      brace_lines <- which(grepl("}", lines2))
+      # Identify the last line that contains }
+      last_brace_line <- tail(brace_lines, 1)
+      # Insert the 'new_code' after the last brace line
+      updated_lines <- c(lines2[1:last_brace_line], new_code)
+      # Recombine the lines
+      updated_combined_string <- paste(updated_lines, collapse = "\n")
+      
+      eval(parse(text = updated_combined_string))
+
+      } else {
+        # Identify the line to split the 'gen' string after using regex
+        pattern <- "data"
+
+        # Find the position to split
+        split_pos <- regexpr(pattern, data_gen, perl = TRUE)
+
+        # Split the 'gen' string into two parts based on position
+        part1 <- substr(gen, 1, split_pos + attr(split_pos, "match.length") - 1)
+        part2 <- substr(gen, split_pos + attr(split_pos, "match.length"), nchar(gen))
+
+        # Combine the parts, adding std_MFun in between
+        combined_string <- paste(part1, custom_auto, part2, sep = "\n")
+        eval(parse(text = combined_string))
+
+      }
 
     }
   }
@@ -366,11 +508,9 @@ mplusParallel_automation <- function(k, k.start = 1,  data_gen = NA, seed = 123,
         df.final = df.fi
       }
 
-    } else{
-      df.final = df.final
+    } 
     }
-
-  }
+  
   ### --- Removing of subdirectories created --- ###
 
   return(df.final)

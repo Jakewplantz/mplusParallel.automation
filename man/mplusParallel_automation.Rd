@@ -16,10 +16,12 @@ mplusParallel_automation(
   Par_plan = "cluster",
   rec = F,
   results = c(),
-  params_ext = c("unstandardized"),
+  multi_con = F,
+  con_index = c(),
   specific_sums = NULL,
   specific_params = NULL,
   item = NULL,
+  params_ext = c("unstandardized"),
   modV1s = NULL,
   ops = NULL,
   modV2s = NULL,
@@ -61,16 +63,20 @@ In testing the default will use most of a computer's CPU power but no break the 
 and modindicies or any named list argument output by mplus automation. When using summaries, parameters, or modindicies
 mnore specific output is available.}
 
-\item{params_ext}{When \code{results} is 'parameters', specifies parameter type for
-extraction. Can take any type but defaults to 'unstandardized'.
-If you do not desire unstandardized parameters read in an output file to
-determine the name of the parameters of interest and use this as the named argument.}
+\item{multi_con}{Logical. Indicates whether multiple conditions are run in a singular instance. Default is F.}
+
+\item{con_index}{A character vector. Specifies the indices for conditions to be tracked.}
 
 \item{specific_sums}{Extracts specific output when \code{results} is 'summaries'.}
 
 \item{specific_params}{Extracts specific parameters when \code{results} is 'parameters'.}
 
 \item{item}{Extracts specific items when \code{results} is 'parameters'.}
+
+\item{params_ext}{When \code{results} is 'parameters', specifies parameter type for
+extraction. Can take any type but defaults to 'unstandardized'.
+If you do not desire unstandardized parameters read in an output file to
+determine the name of the parameters of interest and use this as the named argument.}
 
 \item{modV1s}{Used for specific output when \code{results} is 'mod_indicies'.}
 
