@@ -46,7 +46,57 @@
 #'   be attempted.
 #'
 #' @return Function returns a dataframe of all the desired parameters for each replication.
-
+#' @examples
+#' \dontrun{
+#' # Loading the package
+#' library(mplusParallel.automation)
+#'
+#' # Data Generation
+#' n_people <- 500
+#' n_items <- 12
+#' data <- matrix(sample(1:5, n_people * n_items, replace = TRUE), ncol = n_items)
+#'
+#' # Writing an example input file
+#' inp_content <- "
+#' TITLE: TEST
+#' DATA: FILE IS exdat.csv;
+#' VARIABLE:
+#'   Names ARE
+#' i1 i2 i3 i4 i5 i6 i7 i8 i9 i10 i11 i12;
+#' USEVARIABLES ARE i1-i12;
+#' ANALYSIS:
+#' TYPE = GENERAL;
+#' PROCESSORS=6;
+#' OUTPUT:
+#' STANDARDIZED;
+#' MODINDICES (ALL);
+#' MODEL:
+#'   trait1 BY
+#' i1 (a1)
+#' i2 (a2)
+#' i3 (a3)
+#' i4 (a4)
+#' i5 (a5)
+#' i6 (a6);
+#' trait2 BY
+#' i7 (a7)
+#' i8 (a8)
+#' i9 (a9)
+#' i10 (a10)
+#' i11 (a11)
+#' i12 (a12);
+#' i1-i12 (e);
+#' trait1 @ 1
+#' trait2 @ 1
+#' "
+#' writeLines(inp_content, "example_model_simple.inp")
+#'
+#' # Running the function
+#' res <- mplusParallel_automation(k=5, data_gen = data_gen, results = 'parameters', specific_params = c('trait1.by', 'trait2.by'))
+#'
+#' # Clean up
+#' removeParFolders()
+#' }
 #' @export
 
 
@@ -459,8 +509,8 @@ df_list[[length(df_list) + 1]] <- df
   df.final <- as.data.frame(do.call(rbind, df.all))
 
 
-  if (!is.null(specific_sums)) {
-    if (results == 'summaries') {
+  if (results == 'summaries' && !is.null(specific_sums)) {
+
       # Ensure 'Rep' is always included
       specific_sums <- unique(c("Rep", specific_sums))
 
@@ -479,11 +529,11 @@ df_list[[length(df_list) + 1]] <- df
                       paste(missing_cols, collapse = ", "),
                       '\n Make sure you are not requesting information from a different Results call'))
       }
-    } else if (results == 'parameters') {
-      if (!is.null(specific_params)) {
+    } else if (results == 'parameters' && !is.null(specific_params)) {
+
         df.fin <- df.final[df.final$paramHeader %in% toupper(specific_params),]
         df.final = df.fin
-      }
+
 
       if (!is.null(item)) {
         df. <- df.fin[df.fin$param %in% toupper(item),]
@@ -491,12 +541,12 @@ df_list[[length(df_list) + 1]] <- df
       }
 
 
-    } else if (results == 'mod_indices') {
+    } else if (results == 'mod_indices' && is.null(modV1s)) {
 
-      if (!is.null(modV1s)) {
+
         df.fin <- df.final[df.final$modV1 %in% toupper(modV1s)]
         df.final <- df.fin
-      }
+
 
       if (!is.null(ops)) {
         df. <- df.fin[df.fin$op %in% toupper(ops)]
@@ -508,7 +558,7 @@ df_list[[length(df_list) + 1]] <- df
         df.final = df.fi
       }
 
-    }
+
     }
 
   ### --- Removing of subdirectories created --- ###
