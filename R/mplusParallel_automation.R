@@ -532,7 +532,7 @@ df_list[[length(df_list) + 1]] <- df
 
   ### --- Final Dataframe partioning --- ###
   df.final <- as.data.frame(do.call(rbind, df.all))
-if(is.na(custom_auto)){
+if (length(custom_auto) > 0 && is.na(custom_auto)) {
 
   if (results == 'summaries' && !is.null(specific_sums)) {
 
