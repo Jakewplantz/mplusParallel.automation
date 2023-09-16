@@ -8,4 +8,4 @@ Completed:
 - Update documentation for the package such that an example is included in mplusParallel_automation with links to other vignettes.
        - Added in V.0.0.3 release
 - Add Custom_auto function vignette. Troubleshooted errors with use. 
-       - Added in V.0.0.4 release.
+       - Added in V.0.1.0 release.
