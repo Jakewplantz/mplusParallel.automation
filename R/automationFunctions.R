@@ -9,11 +9,13 @@
 #'   deleting folders.
 #' @export
 #' @examples
+#' \dontrun{
 #' # Print the single condition function
 #' Base_AutomationFunc_single()
 #'
 #' # Print the multi-condition function
 #' Base_AutomationFunc_multi()
+#' }
 #' @seealso
 #' \code{\link{mplusParallel_automation}} for the function that creates
 #' these folders.

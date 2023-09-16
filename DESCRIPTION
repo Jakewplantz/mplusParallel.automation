@@ -4,7 +4,7 @@ Version: 0.0.0.1000
 Authors@R: 
     person("Jake", "Plantz", , "Jakewplantz@gmail.com", role = c("aut", "cre"))
 Description: This package offers automation tools to parallelize Mplus operations when using R for data generation. It facilitates streamlined integration between Mplus and R, allowing users to run and manage multiple Mplus models simultaneously and efficiently in R's environment.
-License: MIT 
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3

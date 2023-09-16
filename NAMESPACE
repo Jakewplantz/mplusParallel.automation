@@ -3,3 +3,8 @@
 export(Base_AutomationFunc_single)
 export(mplusParallel_automation)
 export(removeParFolders)
+import(MplusAutomation)
+import(doParallel)
+import(dplyr)
+import(furrr)
+import(future)

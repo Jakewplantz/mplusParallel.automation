@@ -3,7 +3,11 @@
 #' This function provides a parallelized automation for Mplus when using R as the data generation method. When `data_gen`
 #' is specified, include any arguments from the function that need to be set in the global enviornment.
 #'
-#'
+#' @import dplyr
+#' @import doParallel
+#' @import furrr
+#' @import future
+#' @import MplusAutomation
 #' @param k Number of replications desired.
 #' @param k.start Defaults to 1. Specifies the replication to start on.
 #'    Useful if the simulation stopped on a specific replication and resuming without loss of work.
