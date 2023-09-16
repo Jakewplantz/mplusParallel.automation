@@ -1,7 +1,3 @@
-1. Build a shiny app
-2. Add vignettes for simple to complex use of the function:
-       - Implementing your own mplus automation code into the function
-       - Combination of data generation and user generated automation code
 Completed:
 - Add support for use of more complex loops in the data_gen functions.
        - Added in V.0.0.2 release.
@@ -11,3 +7,5 @@ Completed:
        - Added in V.0.0.3 release
 - Update documentation for the package such that an example is included in mplusParallel_automation with links to other vignettes.
        - Added in V.0.0.3 release
+- Add Custom_auto function vignette. Troubleshooted errors with use. 
+       - Added in V.0.1.0 release.
