@@ -22,10 +22,11 @@ containing the word "session") that were created by the \code{mplusParallel_auto
 function.
 }
 \examples{
-# Assuming you have parallel processing folders in your current RStudio 
+\dontrun{
+# Assuming you have parallel processing folders in your current RStudio
 # document's directory
 removeParFolders()
-
+}
 }
 \seealso{
 \code{\link{mplusParallel_automation}} for the function that creates

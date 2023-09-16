@@ -149,7 +149,8 @@ trait2 @ 1
 writeLines(inp_content, "example_model_simple.inp")
 
 # Running the function
-res <- mplusParallel_automation(k=5, data_gen = data_gen, results = 'parameters', specific_params = c('trait1.by', 'trait2.by'))
+res <- mplusParallel_automation(k=5, data_gen = data_gen,
+results = 'parameters', specific_params = c('trait1.by', 'trait2.by'))
 
 # Clean up
 removeParFolders()
