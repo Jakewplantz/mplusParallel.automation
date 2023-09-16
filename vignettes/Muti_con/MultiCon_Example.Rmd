@@ -19,11 +19,6 @@ knitr::opts_chunk$set(
 This vignette demonstrates the usage of the multi_con argument in the mplusParallel_automation function. The multi_con argument allows users to specify whether multiple conditions are being used in a single data_gen function. 
 
 ```{r setup, results='hide',message=FALSE,warning=FALSE, echo = T}
-# --- mplusParallel.automation --- # 
-if (!require("remotes")) {
-  install.packages("remotes")
-}
-remotes::install_github("jakewplantz/mplusParallel.automation")
 library(mplusParallel.automation)
 ```
 
@@ -72,7 +67,7 @@ for (es in dif_effect_sizes) {
 
 The .inp file for this example can be created using the following code.
 
-```{r, eval=FALSE}
+```{r}
 inp_content <- "
 TITLE: TEST
 DATA: FILE IS exdat.csv;

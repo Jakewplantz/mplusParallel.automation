@@ -20,7 +20,7 @@
 
 
 
-Base_AutomationFunc_Single <- function(){
+Base_AutomationFunc_single <- function(){
 std_MFun<-
   "
       retries <- 0

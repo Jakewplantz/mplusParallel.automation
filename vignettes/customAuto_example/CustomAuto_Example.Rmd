@@ -67,7 +67,7 @@ for (es in dif_effect_sizes) {
 
 The .inp files for this example can be created using the following code. In this example we are creating two input files. One to test item 1 for DIF and another to test item 2. Mplus provides functionality for simple looping over items so this can be accomplished there, however, when multiple contraints begin to be used, it becomes difficult to loop over items. In this case mplusParallel_automation may be useful. In the following .inp files we test items 2 and 3 with item 3 manipulated such that there is DIF in one group.
 
-```{r, eval=FALSE}
+```{r}
 inp_content <- "
 TITLE: TEST
 DATA: FILE IS exdat.csv;

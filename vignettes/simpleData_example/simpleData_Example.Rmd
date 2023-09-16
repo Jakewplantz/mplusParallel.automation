@@ -18,7 +18,6 @@ This vignette provides a basic example of generating data and preparing an input
 ## Loading Package
 ```{r,results='hide',message=FALSE,warning=FALSE, echo = T}
 library(mplusParallel.automation)
-
 ```
 
 ## Data Generation Function
