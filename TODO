@@ -1,17 +1,13 @@
-1. Update documentation for the package such that an example is included in mplusParallel_automation with links to other vignettes.
-2. Add support for user determined Parallel processing of different conditions when multi_con = T 
-3. Add vignettes for simple to complex use of the function including:
-       - Simple data generation function
-            (As of 08/31/23 this is in progress)
+1. Build a shiny app
+2. Add vignettes for simple to complex use of the function:
        - Implementing your own mplus automation code into the function
-            (As of 08/31/23 this is in progress)
        - Combination of data generation and user generated automation code
-4. Add support for returning lists from the function.
-
 Completed:
 - Add support for use of more complex loops in the data_gen functions.
        - Added in V.0.0.2 release.
 - Vignette for advanced data generation function usage.
-
-
-
+       - Added in V.0.0.2 release
+- Simple data generation function
+       - Added in V.0.0.3 release
+- Update documentation for the package such that an example is included in mplusParallel_automation with links to other vignettes.
+       - Added in V.0.0.3 release
