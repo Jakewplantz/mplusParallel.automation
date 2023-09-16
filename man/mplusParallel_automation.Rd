@@ -15,7 +15,7 @@ mplusParallel_automation(
   cores_per_analysis = "default",
   Par_plan = "cluster",
   rec = F,
-  results = c(),
+  results = NULL,
   multi_con = F,
   con_index = c(),
   specific_sums = NULL,

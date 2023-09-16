@@ -7,3 +7,8 @@ Multi Con Example
 
 
 -----  https://rpubs.com/jp5656/1080328 -----
+
+
+Custom Auto Example
+
+----- https://rpubs.com/jp5656/1083699 -----
