@@ -102,7 +102,7 @@
 
 mplusParallel_automation <- function(k, k.start = 1,  data_gen = NA, seed = 123, ncores = 'default', run = T,
                                      useCores = T, cores_per_analysis = 'default', Par_plan = 'cluster',
-                                     rec = F, results = c(),
+                                     rec = F, results = NULL,
                                      multi_con = F, con_index = c(),
                                      specific_sums = NULL,
                                      specific_params = NULL, item = NULL,params_ext = c('unstandardized'),
@@ -480,19 +480,39 @@ df_list[[length(df_list) + 1]] <- df
       eval(parse(text = updated_combined_string))
 
       } else {
+        std_MFun <- custom_auto
+        # Identify the line to split the 'gen' string after using regex
         # Identify the line to split the 'gen' string after using regex
         pattern <- "data"
 
-        # Find the position to split
-        split_pos <- regexpr(pattern, data_gen, perl = TRUE)
-
-        # Split the 'gen' string into two parts based on position
-        part1 <- substr(gen, 1, split_pos + attr(split_pos, "match.length") - 1)
-        part2 <- substr(gen, split_pos + attr(split_pos, "match.length"), nchar(gen))
-
         # Combine the parts, adding std_MFun in between
-        combined_string <- paste(part1, custom_auto, part2, sep = "\n")
-        eval(parse(text = combined_string))
+        # Split 'da' into individual lines
+        lines <- strsplit(data_gen, "\n")[[1]]
+
+        # Find all lines that match the pattern
+        matching_lines <- which(grepl(pattern, lines, perl = TRUE))
+
+        # Identify the last matching line
+        last_matching_line <- tail(matching_lines, 1)
+
+        # Insert 'std_MFun' after the last matching line
+        new_lines <- c(lines[1:last_matching_line], std_MFun, lines[(last_matching_line + 1):length(lines)])
+        # Recombine the lines
+        combined_string <- paste(new_lines, collapse = "\n")
+
+
+        # The new code to be added
+        new_code <- c("", "df_final <- do.call(rbind, df_list)", "return(df_final)")
+        lines2 <- strsplit(combined_string, "\n")[[1]]
+        brace_lines <- which(grepl("}", lines2))
+        # Identify the last line that contains }
+        last_brace_line <- tail(brace_lines, 1)
+        # Insert the 'new_code' after the last brace line
+        updated_lines <- c(lines2[1:last_brace_line], new_code)
+        # Recombine the lines
+        updated_combined_string <- paste(updated_lines, collapse = "\n")
+
+        eval(parse(text = updated_combined_string))
 
       }
 
@@ -507,7 +527,7 @@ df_list[[length(df_list) + 1]] <- df
 
   ### --- Final Dataframe partioning --- ###
   df.final <- as.data.frame(do.call(rbind, df.all))
-
+if(is.na(custom_auto)){
 
   if (results == 'summaries' && !is.null(specific_sums)) {
 
@@ -559,7 +579,12 @@ df_list[[length(df_list) + 1]] <- df
       }
 
 
+    } else {
+
     }
+} else{
+  df.final = df.final
+}
 
   ### --- Removing of subdirectories created --- ###
 
