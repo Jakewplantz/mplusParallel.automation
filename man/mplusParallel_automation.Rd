@@ -28,7 +28,7 @@ mplusParallel_automation(
   custom_auto = NULL,
   retry = T,
   max_retry = 5,
-  folder = (dirname(rstudioapi::getActiveDocumentContext()$path))
+  folder = ""
 )
 }
 \arguments{
@@ -93,7 +93,7 @@ returned by the model.}
 \item{max_retry}{Defaults to 5. Specifies how many times a new seed should
 be attempted.}
 
-\item{folder}{Defaults to the pathway of your R script. Path to the root folder
+\item{folder}{Path to the root folder
 of where your mplus files are located.}
 }
 \value{

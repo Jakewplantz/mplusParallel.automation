@@ -4,10 +4,11 @@
 #' is specified, include any arguments from the function that need to be set in the global enviornment.
 #'
 #' @import dplyr
-#' @import doParallel
+#' @import parallel
 #' @import furrr
 #' @import future
 #' @import MplusAutomation
+#'
 #' @param k Number of replications desired.
 #' @param k.start Defaults to 1. Specifies the replication to start on.
 #'    Useful if the simulation stopped on a specific replication and resuming without loss of work.
@@ -24,7 +25,7 @@
 #'   In testing the default will use most of a computer's CPU power but no break the simulation.
 #' @param Par_plan Plan for parallel processing. Defaults to 'cluster'. Can take any argument from the 'future' package
 #' @param rec Logical. Indicates if the files are in subdirectories.
-#' @param folder Defaults to the pathway of your R script. Path to the root folder
+#' @param folder  Path to the root folder
 #'   of where your mplus files are located.
 #' @param run Logical. Defaults to T. When T the Mplus models will be run. When F models will not be run and the output files will be read in only.
 #' @param results Indicates which results to collect. Supports summaries, parameters,
@@ -113,12 +114,12 @@ mplusParallel_automation <- function(k, k.start = 1,  data_gen = NA, seed = 123,
                                      specific_params = NULL, item = NULL,params_ext = c('unstandardized'),
                                      modV1s = NULL,ops = NULL, modV2s = NULL,
                                      custom_auto = NULL, retry = T, max_retry = 5,
-                                     folder = (dirname(rstudioapi::getActiveDocumentContext()$path))){
+                                     folder = ""){
   ### --- Parallel Processing --- ###
   k.start = k.start
   k.range = k
   if (ncores == 'default'){
-    ncores = detectCores()
+    ncores = parallel::detectCores()
   } else {
     ncores = ncores
   }
@@ -289,7 +290,7 @@ mplusParallel_automation <- function(k, k.start = 1,  data_gen = NA, seed = 123,
 
         filepath <- file.path(session_folder, "exdat.csv")
 
-        write.table(data, filepath, col.names = FALSE, row.names = FALSE, sep = ",")
+        utils::write.table(data, filepath, col.names = FALSE, row.names = FALSE, sep = ",")
 
         if (run == T){
           runModels(session_folder, showOutput = F, recursive = rec)
@@ -322,7 +323,7 @@ mplusParallel_automation <- function(k, k.start = 1,  data_gen = NA, seed = 123,
         res <- models_result[[2]]
         res <- res %>%
           mutate(Rep = k) %>%
-          select(Rep, everything())
+          select(.data$Rep, everything())
         new_row <- res
         rows_list[[length(rows_list) + 1]] <- new_row
 
@@ -333,7 +334,7 @@ mplusParallel_automation <- function(k, k.start = 1,  data_gen = NA, seed = 123,
 
         new_data <- new_data %>%
           mutate(Rep = k, ParType = params_ext) %>%
-          select(Rep, everything())
+          select(.data$Rep, everything())
         new_row <- new_data
         rows_list[[length(rows_list) + 1]] <- new_row
 
@@ -343,7 +344,7 @@ mplusParallel_automation <- function(k, k.start = 1,  data_gen = NA, seed = 123,
         new_data <- res
         new_data <- new_data %>%
           mutate(Rep = k) %>%
-          select(Rep, everything())
+          select(.data$Rep, everything())
         new_row <- new_data
         rows_list[[length(rows_list) + 1]] <- new_row
 
@@ -353,7 +354,7 @@ mplusParallel_automation <- function(k, k.start = 1,  data_gen = NA, seed = 123,
         new_data <- res
         new_data <- new_data %>%
           mutate(Rep = k) %>%
-          select(Rep, everything())
+          select(.data$Rep, everything())
         new_row <- new_data
         rows_list[[length(rows_list) + 1]] <- new_row
       }
@@ -406,7 +407,7 @@ if (results == 'summaries') {
     res <- models_result[[2]]
     res <- res %>%
         mutate(Rep = k) %>%
-        select(Rep, everything())
+        select(.data$Rep, everything())
     new_row <- res
 
 for (con in con_index) {
@@ -422,7 +423,7 @@ else if (results == 'parameters') {
     new_data <- res[[2]][[params_ext]]
     new_data <- new_data %>%
         mutate(Rep = k, ParType = params_ext) %>%
-        select(Rep, everything())
+        select(.data$Rep, everything())
     new_row <- new_data
 
 for (con in con_index) {
@@ -438,7 +439,7 @@ else if (results == 'mod_indices') {
     new_data <- res
     new_data <- new_data %>%
         mutate(Rep = k) %>%
-        select(Rep, everything())
+        select(.data$Rep, everything())
     new_row <- new_data
 
 for (con in con_index) {
@@ -463,7 +464,7 @@ df_list[[length(df_list) + 1]] <- df
       matching_lines <- which(grepl(pattern, lines, perl = TRUE))
 
       # Identify the last matching line
-      last_matching_line <- tail(matching_lines, 1)
+      last_matching_line <- utils::tail(matching_lines, 1)
 
       # Insert 'std_MFun' after the last matching line
       new_lines <- c(lines[1:last_matching_line], std_MFun, lines[(last_matching_line + 1):length(lines)])
@@ -476,7 +477,7 @@ df_list[[length(df_list) + 1]] <- df
       lines2 <- strsplit(combined_string, "\n")[[1]]
       brace_lines <- which(grepl("}", lines2))
       # Identify the last line that contains }
-      last_brace_line <- tail(brace_lines, 1)
+      last_brace_line <- utils::tail(brace_lines, 1)
       # Insert the 'new_code' after the last brace line
       updated_lines <- c(lines2[1:last_brace_line], new_code)
       # Recombine the lines
@@ -498,7 +499,7 @@ df_list[[length(df_list) + 1]] <- df
         matching_lines <- which(grepl(pattern, lines, perl = TRUE))
 
         # Identify the last matching line
-        last_matching_line <- tail(matching_lines, 1)
+        last_matching_line <- utils::tail(matching_lines, 1)
 
         # Insert 'std_MFun' after the last matching line
         new_lines <- c(lines[1:last_matching_line], std_MFun, lines[(last_matching_line + 1):length(lines)])
@@ -511,7 +512,7 @@ df_list[[length(df_list) + 1]] <- df
         lines2 <- strsplit(combined_string, "\n")[[1]]
         brace_lines <- which(grepl("}", lines2))
         # Identify the last line that contains }
-        last_brace_line <- tail(brace_lines, 1)
+        last_brace_line <- utils::tail(brace_lines, 1)
         # Insert the 'new_code' after the last brace line
         updated_lines <- c(lines2[1:last_brace_line], new_code)
         # Recombine the lines
@@ -579,7 +580,7 @@ if (length(custom_auto) > 0 && is.na(custom_auto)) {
       }
 
       if (!is.null(modV2s)) {
-        df.fi <- df.[df.$modV2 %in% toupper(modV2)]
+        df.fi <- df.[df.$modV2s %in% toupper(modV2s)]
         df.final = df.fi
       }
 

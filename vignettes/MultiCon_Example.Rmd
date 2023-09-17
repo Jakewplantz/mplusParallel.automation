@@ -1,8 +1,8 @@
 ---
-title: "Multiple Condition Data Generation Functions Vignette"
+title: "Multiple Condition Data Generation Function Example with mplusParallel_automation"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Using the multi_con argument in mplusParallel_automation}
+  %\VignetteIndexEntry{"Multiple Condition Data Generation Function Example with mplusParallel_automation}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -10,8 +10,11 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",  root.dir = 'C:/Users/jakep/OneDrive - McGill University/EMA Partnership/Papers/mplusParallel.automation/vignettes/MultiCon_Example'
 )
+
+
+folder = "C:/Users/jakep/OneDrive - McGill University/EMA Partnership/Papers/mplusParallel.automation/vignettes/MultiCon_Example"
 ```
 
 # Introduction 
@@ -118,9 +121,9 @@ i10 (b10)
 i11 (b11)
 i12 (b12);
 "
-
+full_path1 <- file.path(folder, "example_model.inp")
 # Write to an inp file
-writeLines(inp_content, "example_model.inp")
+writeLines(inp_content, full_path1)
 
 ```
 
@@ -142,7 +145,7 @@ In this case we return the summaries from each replication. All single condition
 
 ```{r}
 
-res <- mplusParallel_automation(k=5, multi_con = T, data_gen = data_gen, con_index = c('es','s'), results = 'summaries') 
+res <- mplusParallel_automation(k=5, multi_con = T, data_gen = data_gen, con_index = c('es','s'), results = 'summaries', folder = folder) 
 
 ```
 
@@ -150,7 +153,7 @@ We can now examine the results and remove the session folders unless they need t
 
 
 ```{r, comment= NA}
-res[,c(1,29,30,33,34)]
+res[c(1,6,11,16,20), c(30:31,33:34)]
 
-removeParFolders()
+#removeParFolders()
 ```

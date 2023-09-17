@@ -1,14 +1,20 @@
 ---
-
-output:
-  html_document:
-    df_print: paged
-vignette: |
-  %\VignetteIndexEntry{Simple Data Generation Example} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
+title: "Simple Data Example Vignette with mplusParallel_automation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Simple Data Example Vignette with mplusParallel_automation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  root.dir = 'C:/Users/jakep/OneDrive - McGill University/EMA Partnership/Papers/mplusParallel.automation/vignettes/simpleData_Example'
+)
+folder = "C:/Users/jakep/OneDrive - McGill University/EMA Partnership/Papers/mplusParallel.automation/vignettes/simpleData_Example"
+
 ```
 
 # Simple Data Generation Example
@@ -74,23 +80,23 @@ i1-i12 (e);
 trait1 @ 1
 trait2 @ 1
 "
-
+full_path1 <- file.path(folder, "example_model_simple.inp")
 # Write to an inp file
-writeLines(inp_content, "example_model_simple.inp")
+writeLines(inp_content, full_path1)
 ```
 
 ## Running mplusParallel_automation
 To run the automation with the generated data we can use the following options. In this case, we are going to only extract the factor loadings usign the optional 'specific_params' argument.
 
 ```{r}
-res <- mplusParallel_automation(k=5, data_gen = data_genFunk, results = 'parameters', specific_params = c('trait1.by', 'trait2.by'))
+res <- mplusParallel_automation(k=5, data_gen = data_genFunk, results = 'parameters', specific_params = c('trait1.by', 'trait2.by'), folder = folder)
 
-print(res[c(2,14,26,38,50),])
+head(res)
 ```
 
 ## Cleanup
 After completion, you can remove any generated folders:
 
-```{r}
-removeParFolders()
+```{r, eval=F}
+#removeParFolders()
 ```
