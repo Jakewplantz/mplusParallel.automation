@@ -4,13 +4,10 @@
 \alias{removeParFolders}
 \title{Remove Parallel Processing Folders from mplusParallel_automation}
 \usage{
-removeParFolders(
-  folder = (dirname(rstudioapi::getActiveDocumentContext()$path))
-)
+removeParFolders(folder = NULL)
 }
 \arguments{
-\item{folder}{The root directory to search for parallel processing folders.
-Defaults to the directory of the currently active RStudio document.}
+\item{folder}{The root directory to search for parallel processing folders.}
 }
 \value{
 Invisible NULL. The function is called for its side effect of

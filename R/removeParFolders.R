@@ -5,7 +5,7 @@
 #' function.
 #'
 #' @param folder The root directory to search for parallel processing folders.
-#'   Defaults to the directory of the currently active RStudio document.
+#'
 #'
 #' @return Invisible NULL. The function is called for its side effect of
 #'   deleting folders.
@@ -23,7 +23,7 @@
 
 
 
-removeParFolders <- function(folder =(dirname(rstudioapi::getActiveDocumentContext()$path))){
+removeParFolders <- function(folder =NULL){
   subdirs <- list.dirs(folder, full.names = TRUE, recursive = FALSE)
   for (subdir in subdirs) {
     if (grepl("session", basename(subdir))) {

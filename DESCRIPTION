@@ -1,21 +1,13 @@
 Package: mplusParallel.automation
+Type: Package
 Title: Parallel Processing Automation for Mplus in R
-Version: 0.0.0.1002
-Authors@R: 
-    person("Jake", "Plantz", , "Jakewplantz@gmail.com", role = c("aut", "cre"))
+Version: 0.0.0.1003
+Authors@R: person("Jake", "Plantz", email = "Jakewplantz@gmail.com", role = c("aut", "cre"))
 Description: This package offers automation tools to parallelize Mplus operations when using R for data generation. It facilitates streamlined integration between Mplus and R, allowing users to run and manage multiple Mplus models simultaneously and efficiently in R's environment.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Depends: 
-    parallel,
-    dplyr,
-    furrr,
-    future,
-    MplusAutomation,
-Suggests: 
-    knitr,
-    rmarkdown,
-    mvtnorm
-VignetteBuilder: knitr
+Imports: dplyr, furrr, future, parallel
+Depends: MplusAutomation
+Suggests: knitr, mvtnorm, rmarkdown

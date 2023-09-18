@@ -1,0 +1,53 @@
+
+TITLE: TEST
+DATA: FILE IS exdat.csv;
+VARIABLE:
+  Names ARE
+group
+i1 i2 i3 i4 i5 i6 i7 i8 i9 i10 i11 i12;
+USEVARIABLES ARE i1-i12;
+GROUPING IS group(1=G1, 2=G2)
+ANALYSIS:
+TYPE = GENERAL;
+PROCESSORS=6;
+OUTPUT:
+STANDARDIZED;
+MODINDICES (ALL);
+MODEL:
+  trait1 BY 
+i1 (a1)
+i2 (a2)
+i3 (a3)
+i4 (a4)
+i5 (a5)
+i6 (a6);
+trait2 BY 
+i7 (a7)
+i8 (a8)
+i9 (a9)
+i10 (a10)
+i11 (a11)
+i12 (a12);
+i1-i12 (e);
+trait1 @ 1 
+trait2 @ 1 
+MODEL G1:
+MODEL G2:
+  trait1 BY 
+i1 (b1)
+i2 (b2)
+i3 (b3)
+i4 (b4)
+i5 (b5)
+i6 (a6);
+trait2 BY 
+i7 (a7)
+i8 (b8)
+i9 (b9)
+i10 (b10)
+i11 (b11)
+i12 (b12);
+
+MODEL TEST:
+! Testing Item 2 for DIF
+0 = a3 - b3; 
